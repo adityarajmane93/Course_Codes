@@ -1,0 +1,18 @@
+A = load 'tweet' AS (line:chararray);
+B = FOREACH A GENERATE FLATTEN(TOKENIZE(line,'[-,: #]'))as word;
+dec = FILTER B by (LOWER(word)=='dec');
+gdec = GROUP dec by (LOWER(word));
+cdec = FOREACH gdec GENERATE COUNT(dec), group;
+chicago = FILTER B by (LOWER(word)=='chicago'); 
+gchicago = GROUP chicago by (LOWER(word));
+cchicago = FOREACH gchicago GENERATE COUNT(chicago), group;
+hackathon = FILTER B by (LOWER(word)=='hackathon'); 
+ghackathon = GROUP hackathon by (LOWER(word));
+chackathon = FOREACH ghackathon GENERATE COUNT(hackathon), group;
+java = FILTER B by (LOWER(word)=='java'); 
+gjava = GROUP java by (LOWER(word));
+cjava = FOREACH gjava GENERATE COUNT(java), group;
+C1 = UNION dec,chicago,hackathon,java;
+C = GROUP C1 by LOWER(word);
+D = foreach C generate COUNT(C1), group;
+store D into './tweetcount1';
